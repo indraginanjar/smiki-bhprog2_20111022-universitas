@@ -13,6 +13,7 @@ package universitas;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.TextField;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,9 +25,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -37,7 +41,7 @@ import javax.swing.table.TableCellRenderer;
 @SuppressWarnings("serial")
 public class MahasiswaForm extends javax.swing.JFrame {
 
-    DefaultTableModel model = new DefaultTableModel();
+    DefaultTableModel mahasiswaTableModel = new ReadonlyTableModel();
     final Connection c;
     Statement s;
     final String select_sql;
@@ -47,12 +51,12 @@ public class MahasiswaForm extends javax.swing.JFrame {
     /** Creates new form MahasiswaForm */
     public MahasiswaForm() {
         initComponents();
-        mahasiswaTable.setModel(model);
-        model.addColumn("nim");
-        model.addColumn("Nama");
-        model.addColumn("Tanggal Lahir");
-        model.addColumn("Jurusan");
-        model.addColumn("Alamat");
+        mahasiswaTable.setModel(mahasiswaTableModel);
+        mahasiswaTableModel.addColumn("nim");
+        mahasiswaTableModel.addColumn("Nama");
+        mahasiswaTableModel.addColumn("Tanggal Lahir");
+        mahasiswaTableModel.addColumn("Jurusan");
+        mahasiswaTableModel.addColumn("Alamat");
 
         c = KoneksiDatabase.getKoneksi();
         try {
@@ -64,7 +68,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
 
         loadData();
 
-        mahasiswaTable.setModel(model);
+        mahasiswaTable.setModel(mahasiswaTableModel);
     }
 
     /** This method is called from within the constructor to
@@ -153,7 +157,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
         alamatTextArea.setRows(5);
         jScrollPane2.setViewportView(alamatTextArea);
 
-        jLabel6.setFont(new java.awt.Font("Ubuntu", 0, 8)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Ubuntu", 0, 8));
         jLabel6.setForeground(new java.awt.Color(138, 195, 16));
         jLabel6.setText("tanggal/bulan/tahun");
 
@@ -283,7 +287,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
             return;
         }
 // ambil nim yang terseleksi
-        String nim = (String) model.getValueAt(i, 0);
+        String nim = (String) mahasiswaTableModel.getValueAt(i, 0);
         String nama = namaTextField.getText();
         java.util.Date tanggalLahir = (java.util.Date) lahirFormattedTextField.getValue();
         String jurusan = jurusanTextField.getText();
@@ -314,7 +318,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
 // tidak ada baris terseleksi
             return;
         }
-        String nim = (String) model.getValueAt(i, 0);
+        String nim = (String) mahasiswaTableModel.getValueAt(i, 0);
         try {
             String sql = "DELETE FROM mahasiswa WHERE NIM = ?";
             PreparedStatement p = c.prepareStatement(sql);
@@ -340,15 +344,15 @@ public class MahasiswaForm extends javax.swing.JFrame {
         }
         ubahButton.setEnabled(true);
         hapusButton.setEnabled(true);
-        String nim = (String) model.getValueAt(i, 0);
+        String nim = (String) mahasiswaTableModel.getValueAt(i, 0);
         nimTextField.setText(nim);
-        String nama = (String) model.getValueAt(i, 1);
+        String nama = (String) mahasiswaTableModel.getValueAt(i, 1);
         namaTextField.setText(nama);
-        java.util.Date tanggalLahir = (java.util.Date) model.getValueAt(i, 2);
+        java.util.Date tanggalLahir = (java.util.Date) mahasiswaTableModel.getValueAt(i, 2);
         lahirFormattedTextField.setValue(tanggalLahir);
-        String jurusan = (String) model.getValueAt(i, 3);
+        String jurusan = (String) mahasiswaTableModel.getValueAt(i, 3);
         jurusanTextField.setText(jurusan);
-        String alamat = (String) model.getValueAt(i, 4);
+        String alamat = (String) mahasiswaTableModel.getValueAt(i, 4);
         alamatTextArea.setText(alamat);
 
     }//GEN-LAST:event_mahasiswaTableMouseClicked
@@ -368,9 +372,9 @@ public class MahasiswaForm extends javax.swing.JFrame {
 
     private void loadData() {
 // menghapus seluruh data
-        model.getDataVector().removeAllElements();
+        mahasiswaTableModel.getDataVector().removeAllElements();
 // memberi tahu bahwa data telah kosong
-        model.fireTableDataChanged();
+        mahasiswaTableModel.fireTableDataChanged();
         try {
 
             ResultSet r = s.executeQuery(select_sql);
@@ -383,7 +387,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
                 o[2] = savedTanggalLahir;
                 o[3] = r.getString("jurusan");
                 o[4] = r.getString("alamat");
-                model.addRow(o);
+                mahasiswaTableModel.addRow(o);
             }
             r.close();
             //s.close();
@@ -391,11 +395,19 @@ public class MahasiswaForm extends javax.swing.JFrame {
 
                 @Override
                 public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
+                    table.getEditorComponent();
                     JLabel valueLabel = null;
                     valueLabel = new JLabel(df.format(value));
                     valueLabel.setFont(table.getFont());
-                    return valueLabel;
+                    JTextField renderer = new JTextField(df.format(value));
+                    renderer.setBorder(null);
+                    if(isSelected){
+                        renderer.setBackground(table.getSelectionBackground());
+                    }
+                    else{
+                        renderer.setBackground(table.getBackground());
+                    }
+                    return renderer;
                 }
             });
         } catch (SQLException e) {
@@ -412,19 +424,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
         ubahButton.setEnabled(false);
         hapusButton.setEnabled(false);
     }
-    TableCellRenderer tcr = new TableCellRenderer() {
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel bornDate = new JLabel(df.format((Date) value));
-            if (isSelected || hasFocus) {
-                bornDate.setBackground(table.getSelectionBackground());
-            }
-            bornDate.setBackground(table.getSelectionBackground());
-            bornDate.setBackground(Color.red);
-            return bornDate;
-        }
-    };
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea alamatTextArea;
     private javax.swing.JButton hapusButton;
