@@ -5,32 +5,26 @@
 
 /*
  * MahasiswaForm.java
- * FIXME: Warna kolom "Tanggal Lahir" tidak ikut berubah saat row terpilih
+ * 
  * Created on Oct 22, 2011, 2:56:09 PM
  */
 package universitas;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
-import java.awt.TextField;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -42,10 +36,10 @@ import javax.swing.table.TableCellRenderer;
 public class MahasiswaForm extends javax.swing.JFrame {
 
     DefaultTableModel mahasiswaTableModel = new ReadonlyTableModel();
-    final Connection c;
-    Statement s;
+    final Connection dbConnection;
+    Statement sqlStatement;
     final String select_sql;
-    final DateFormat df = new SimpleDateFormat("d/M/yyyy");
+    final DateFormat dateFormater = new SimpleDateFormat("dd/MM/yyyy");
     Date savedTanggalLahir;
 
     /** Creates new form MahasiswaForm */
@@ -58,9 +52,9 @@ public class MahasiswaForm extends javax.swing.JFrame {
         mahasiswaTableModel.addColumn("Jurusan");
         mahasiswaTableModel.addColumn("Alamat");
 
-        c = KoneksiDatabase.getKoneksi();
+        dbConnection = KoneksiDatabase.getKoneksi();
         try {
-            s = c.createStatement();
+            sqlStatement = dbConnection.createStatement();
         } catch (SQLException e) {
             System.err.println(e);
         }
@@ -97,8 +91,10 @@ public class MahasiswaForm extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         alamatTextArea = new javax.swing.JTextArea();
         jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setText("NIM");
 
@@ -161,6 +157,9 @@ public class MahasiswaForm extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(138, 195, 16));
         jLabel6.setText("tanggal/bulan/tahun");
 
+        jLabel7.setFont(new java.awt.Font("Dialog", 1, 8)); // NOI18N
+        jLabel7.setText("indraginanjar@gmail.com");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -195,9 +194,6 @@ public class MahasiswaForm extends javax.swing.JFrame {
                         .addGap(6, 6, 6)
                         .addComponent(hapusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(50, 50, 50)
                         .addComponent(jLabel3)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -206,7 +202,12 @@ public class MahasiswaForm extends javax.swing.JFrame {
                                 .addComponent(jLabel6))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(lahirFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(lahirFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel7)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -252,7 +253,9 @@ public class MahasiswaForm extends javax.swing.JFrame {
                     .addComponent(hapusButton))
                 .addGap(23, 23, 23)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel7)
+                .addGap(14, 14, 14))
         );
 
         pack();
@@ -261,7 +264,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
     private void tambahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tambahButtonMouseClicked
         try {
             String sql = "INSERT INTO mahasiswa VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement p = c.prepareStatement(sql);
+            PreparedStatement p = dbConnection.prepareStatement(sql);
             p.setString(1, nimTextField.getText());
             p.setString(2, namaTextField.getText());
             p.setDate(3, new java.sql.Date(
@@ -281,7 +284,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
     }//GEN-LAST:event_tambahButtonMouseClicked
 
     private void ubahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ubahButtonMouseClicked
-        int i = mahasiswaTable.getSelectedRow();
+        final int i = mahasiswaTable.getSelectedRow();
         if (i == -1) {
 // tidak ada baris terseleksi
             return;
@@ -294,7 +297,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
         String alamat = alamatTextArea.getText();
         try {
             String sql = "UPDATE mahasiswa SET nama = ?, tanggal_lahir = ?, jurusan = ?, alamat = ? where nim = ?";
-            PreparedStatement p = c.prepareStatement(sql);
+            PreparedStatement p = dbConnection.prepareStatement(sql);
             p.setString(1, nama);
             p.setDate(2, new java.sql.Date(tanggalLahir.getTime()));
             p.setString(3, jurusan);
@@ -313,15 +316,15 @@ public class MahasiswaForm extends javax.swing.JFrame {
     }//GEN-LAST:event_ubahButtonMouseClicked
 
     private void hapusButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_hapusButtonMouseClicked
-        int i = mahasiswaTable.getSelectedRow();
-        if (i == -1) {
+        int selectedRow = mahasiswaTable.getSelectedRow();
+        if (selectedRow == -1) {
 // tidak ada baris terseleksi
             return;
         }
-        String nim = (String) mahasiswaTableModel.getValueAt(i, 0);
+        String nim = (String) mahasiswaTableModel.getValueAt(selectedRow, 0);
         try {
             String sql = "DELETE FROM mahasiswa WHERE NIM = ?";
-            PreparedStatement p = c.prepareStatement(sql);
+            PreparedStatement p = dbConnection.prepareStatement(sql);
             p.setString(1, nim);
             p.executeUpdate();
             p.close();
@@ -334,9 +337,9 @@ public class MahasiswaForm extends javax.swing.JFrame {
     }//GEN-LAST:event_hapusButtonMouseClicked
 
     private void mahasiswaTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mahasiswaTableMouseClicked
-        int i = mahasiswaTable.getSelectedRow();
+        int selectedRow = mahasiswaTable.getSelectedRow();
         // jika tak ada baris terseleksi
-        if (i == -1) {
+        if (selectedRow == -1) {
             emptyAllTextField();
             ubahButton.setEnabled(false);
             hapusButton.setEnabled(false);
@@ -344,15 +347,15 @@ public class MahasiswaForm extends javax.swing.JFrame {
         }
         ubahButton.setEnabled(true);
         hapusButton.setEnabled(true);
-        String nim = (String) mahasiswaTableModel.getValueAt(i, 0);
+        String nim = (String) mahasiswaTableModel.getValueAt(selectedRow, 0);
         nimTextField.setText(nim);
-        String nama = (String) mahasiswaTableModel.getValueAt(i, 1);
+        String nama = (String) mahasiswaTableModel.getValueAt(selectedRow, 1);
         namaTextField.setText(nama);
-        java.util.Date tanggalLahir = (java.util.Date) mahasiswaTableModel.getValueAt(i, 2);
+        java.util.Date tanggalLahir = (java.util.Date) mahasiswaTableModel.getValueAt(selectedRow, 2);
         lahirFormattedTextField.setValue(tanggalLahir);
-        String jurusan = (String) mahasiswaTableModel.getValueAt(i, 3);
+        String jurusan = (String) mahasiswaTableModel.getValueAt(selectedRow, 3);
         jurusanTextField.setText(jurusan);
-        String alamat = (String) mahasiswaTableModel.getValueAt(i, 4);
+        String alamat = (String) mahasiswaTableModel.getValueAt(selectedRow, 4);
         alamatTextArea.setText(alamat);
 
     }//GEN-LAST:event_mahasiswaTableMouseClicked
@@ -377,32 +380,35 @@ public class MahasiswaForm extends javax.swing.JFrame {
         mahasiswaTableModel.fireTableDataChanged();
         try {
 
-            ResultSet r = s.executeQuery(select_sql);
+            ResultSet r = sqlStatement.executeQuery(select_sql);
             while (r.next()) {
 // lakukan penelusuran baris
-                Object[] o = new Object[5];
-                o[0] = r.getString("nim");
-                o[1] = r.getString("nama");
+                Object[] newRowFields = new Object[5];
+                newRowFields[0] = r.getString("nim");
+                newRowFields[1] = r.getString("nama");
                 savedTanggalLahir = r.getDate("tanggal_lahir");
-                o[2] = savedTanggalLahir;
-                o[3] = r.getString("jurusan");
-                o[4] = r.getString("alamat");
-                mahasiswaTableModel.addRow(o);
+                newRowFields[2] = savedTanggalLahir;
+                newRowFields[3] = r.getString("jurusan");
+                newRowFields[4] = r.getString("alamat");
+                mahasiswaTableModel.addRow(newRowFields);
             }
             r.close();
-            //s.close();
             mahasiswaTable.getColumnModel().getColumn(2).setCellRenderer(new TableCellRenderer() {
 
                 @Override
                 public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                     table.getEditorComponent();
                     JLabel valueLabel = null;
-                    valueLabel = new JLabel(df.format(value));
+                    valueLabel = new JLabel(dateFormater.format(value));
                     valueLabel.setFont(table.getFont());
-                    JTextField renderer = new JTextField(df.format(value));
+                    JTextField renderer = new JTextField(dateFormater.format(value));
                     renderer.setBorder(null);
+                    renderer.setBorder(table.getBorder());
                     if(isSelected){
                         renderer.setBackground(table.getSelectionBackground());
+                        if(hasFocus){
+                            renderer.setBorder(BorderFactory.createLineBorder(new Color(table.getGridColor().getRGB())));
+                        }
                     }
                     else{
                         renderer.setBackground(table.getBackground());
@@ -434,6 +440,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jurusanTextField;
