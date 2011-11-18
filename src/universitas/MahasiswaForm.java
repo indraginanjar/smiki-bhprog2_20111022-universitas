@@ -10,6 +10,7 @@
  */
 package universitas;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.sql.Connection;
@@ -18,8 +19,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -262,7 +266,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
             p.setString(5, alamatTextArea.getText());
             p.executeUpdate();
             p.close();
-        }catch(java.lang.NullPointerException e){
+        } catch (java.lang.NullPointerException e) {
             JOptionPane.showMessageDialog(this, "Seluruh field mesti diisi lengkap");
         } catch (SQLException e) {
             System.err.println(e);
@@ -387,8 +391,10 @@ public class MahasiswaForm extends javax.swing.JFrame {
 
                 @Override
                 public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                    JLabel valueLabel = new JLabel(df.format((Date) value));
-                    valueLabel.setFont(new Font(null, Font.PLAIN, 15));
+
+                    JLabel valueLabel = null;
+                    valueLabel = new JLabel(df.format(value));
+                    valueLabel.setFont(table.getFont());
                     return valueLabel;
                 }
             });
@@ -410,7 +416,13 @@ public class MahasiswaForm extends javax.swing.JFrame {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            return new JLabel(df.format((Date) value));
+            JLabel bornDate = new JLabel(df.format((Date) value));
+            if (isSelected || hasFocus) {
+                bornDate.setBackground(table.getSelectionBackground());
+            }
+            bornDate.setBackground(table.getSelectionBackground());
+            bornDate.setBackground(Color.red);
+            return bornDate;
         }
     };
     // Variables declaration - do not modify//GEN-BEGIN:variables
