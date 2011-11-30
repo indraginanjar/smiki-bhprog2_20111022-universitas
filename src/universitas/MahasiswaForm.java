@@ -74,6 +74,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        NavigasiButtonGroup = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         nimTextField = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -92,8 +93,12 @@ public class MahasiswaForm extends javax.swing.JFrame {
         alamatTextArea = new javax.swing.JTextArea();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        mahasiswaRadioButton = new javax.swing.JRadioButton();
+        matakuliahRadioButton = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Indra's Universitas - Mahasiswa");
         setResizable(false);
 
         jLabel1.setText("NIM");
@@ -157,8 +162,22 @@ public class MahasiswaForm extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(138, 195, 16));
         jLabel6.setText("tanggal/bulan/tahun");
 
-        jLabel7.setFont(new java.awt.Font("Dialog", 1, 8)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Dialog", 1, 8));
         jLabel7.setText("indraginanjar@gmail.com");
+
+        jLabel8.setText("Form");
+
+        NavigasiButtonGroup.add(mahasiswaRadioButton);
+        mahasiswaRadioButton.setSelected(true);
+        mahasiswaRadioButton.setText("Mahasiswa");
+
+        NavigasiButtonGroup.add(matakuliahRadioButton);
+        matakuliahRadioButton.setText("Matakuliah");
+        matakuliahRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                matakuliahRadioButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -166,11 +185,6 @@ public class MahasiswaForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(jLabel1)
-                        .addGap(92, 92, 92)
-                        .addComponent(nimTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(51, 51, 51)
                         .addComponent(jLabel2)
@@ -207,13 +221,32 @@ public class MahasiswaForm extends javax.swing.JFrame {
                         .addGap(30, 30, 30)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel7)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(51, 51, 51)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addGap(82, 82, 82)
+                                .addComponent(mahasiswaRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(matakuliahRadioButton))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(92, 92, 92)
+                                .addComponent(nimTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(40, 40, 40)
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(mahasiswaRadioButton)
+                        .addComponent(matakuliahRadioButton))
+                    .addComponent(jLabel8))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -360,6 +393,11 @@ public class MahasiswaForm extends javax.swing.JFrame {
 
     }//GEN-LAST:event_mahasiswaTableMouseClicked
 
+    private void matakuliahRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_matakuliahRadioButtonActionPerformed
+        NavigationUtil.showMatakuliahForm();
+        mahasiswaRadioButton.setSelected(true);
+    }//GEN-LAST:event_matakuliahRadioButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -432,6 +470,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup NavigasiButtonGroup;
     private javax.swing.JTextArea alamatTextArea;
     private javax.swing.JButton hapusButton;
     private javax.swing.JLabel jLabel1;
@@ -441,11 +480,14 @@ public class MahasiswaForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextField jurusanTextField;
     private javax.swing.JFormattedTextField lahirFormattedTextField;
+    private javax.swing.JRadioButton mahasiswaRadioButton;
     private javax.swing.JTable mahasiswaTable;
+    private javax.swing.JRadioButton matakuliahRadioButton;
     private javax.swing.JTextField namaTextField;
     private javax.swing.JTextField nimTextField;
     private javax.swing.JButton tambahButton;

@@ -15,6 +15,6 @@ public class Universitas {
      */
     public static void main(String[] args) {
         KoneksiDatabase.getKoneksi();
-        new MatakuliahForm().setVisible(true);
+        NavigationUtil.showMahasiswaForm();
     }
 }
