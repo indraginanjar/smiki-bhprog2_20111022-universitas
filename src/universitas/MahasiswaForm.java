@@ -1,15 +1,11 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * MahasiswaForm.java
  * 
  * Created on Oct 22, 2011, 2:56:09 PM
  */
 package universitas;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import java.awt.Color;
 import java.awt.Component;
 import java.sql.Connection;
@@ -25,22 +21,22 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 /**
  *
- * @author indra
+ * @author indraginanjar@gmail.com
  */
 @SuppressWarnings("serial")
 public class MahasiswaForm extends javax.swing.JFrame {
 
-    DefaultTableModel mahasiswaTableModel = new ReadonlyTableModel();
+    ReadonlyTableModel mahasiswaTableModel = new ReadonlyTableModel();
     final Connection dbConnection;
     Statement sqlStatement;
     final String select_sql;
     final DateFormat dateFormater = new SimpleDateFormat("dd/MM/yyyy");
     Date savedTanggalLahir;
+    int selectedRow;
 
     /** Creates new form MahasiswaForm */
     public MahasiswaForm() {
@@ -52,7 +48,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
         mahasiswaTableModel.addColumn("Jurusan");
         mahasiswaTableModel.addColumn("Alamat");
 
-        dbConnection = KoneksiDatabase.getKoneksi();
+        dbConnection = DatabaseUtil.getConnection();
         try {
             sqlStatement = dbConnection.createStatement();
         } catch (SQLException e) {
@@ -99,19 +95,30 @@ public class MahasiswaForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Indra's Universitas - Mahasiswa");
+        setMinimumSize(new java.awt.Dimension(534, 604));
         setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("NIM");
+        jLabel1.setText("NIM:");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(51, 54, -1, -1));
+        getContentPane().add(nimTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 54, 330, -1));
 
         jLabel2.setText("Nama:");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(51, 94, -1, -1));
+        getContentPane().add(namaTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 94, 330, -1));
 
         jLabel3.setText("Tanggal Lahir:");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 139, -1, -1));
 
         jLabel4.setText("Jurusan:");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, -1, -1));
 
-        jLabel5.setText("Alamat");
+        jLabel5.setText("Alamat:");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, -1, -1));
+        getContentPane().add(jurusanTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 190, 330, -1));
 
         lahirFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("d/M/yyyy"))));
+        getContentPane().add(lahirFormattedTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 139, 330, -1));
 
         tambahButton.setText("Tambah");
         tambahButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -119,6 +126,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
                 tambahButtonMouseClicked(evt);
             }
         });
+        getContentPane().add(tambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 340, 100, -1));
 
         ubahButton.setText("Ubah");
         ubahButton.setEnabled(false);
@@ -127,6 +135,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
                 ubahButtonMouseClicked(evt);
             }
         });
+        getContentPane().add(ubahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 340, 110, -1));
 
         hapusButton.setText("Hapus");
         hapusButton.setEnabled(false);
@@ -135,6 +144,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
                 hapusButtonMouseClicked(evt);
             }
         });
+        getContentPane().add(hapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(396, 340, 100, -1));
 
         mahasiswaTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -154,22 +164,30 @@ public class MahasiswaForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(mahasiswaTable);
 
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 392, 470, 182));
+
         alamatTextArea.setColumns(20);
         alamatTextArea.setRows(5);
         jScrollPane2.setViewportView(alamatTextArea);
 
-        jLabel6.setFont(new java.awt.Font("Ubuntu", 0, 8));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 230, 330, -1));
+
+        jLabel6.setFont(new java.awt.Font("Ubuntu", 0, 8)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(138, 195, 16));
         jLabel6.setText("tanggal/bulan/tahun");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 160, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Dialog", 1, 8));
         jLabel7.setText("indraginanjar@gmail.com");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(383, 574, -1, -1));
 
-        jLabel8.setText("Form");
+        jLabel8.setText("Form:");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(51, 16, -1, -1));
 
         NavigasiButtonGroup.add(mahasiswaRadioButton);
         mahasiswaRadioButton.setSelected(true);
         mahasiswaRadioButton.setText("Mahasiswa");
+        getContentPane().add(mahasiswaRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 12, -1, -1));
 
         NavigasiButtonGroup.add(matakuliahRadioButton);
         matakuliahRadioButton.setText("Matakuliah");
@@ -178,123 +196,20 @@ public class MahasiswaForm extends javax.swing.JFrame {
                 matakuliahRadioButtonActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(jLabel2)
-                        .addGap(75, 75, 75)
-                        .addComponent(namaTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(jLabel4)
-                        .addGap(59, 59, 59)
-                        .addComponent(jurusanTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(jLabel5)
-                        .addGap(71, 71, 71)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(170, 170, 170)
-                        .addComponent(tambahButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(ubahButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addComponent(hapusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addComponent(jLabel3)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addComponent(jLabel6))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(lahirFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel7)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addGap(82, 82, 82)
-                                .addComponent(mahasiswaRadioButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(matakuliahRadioButton))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(92, 92, 92)
-                                .addComponent(nimTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(34, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(mahasiswaRadioButton)
-                        .addComponent(matakuliahRadioButton))
-                    .addComponent(jLabel8))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel1))
-                    .addComponent(nimTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(13, 13, 13)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel2))
-                    .addComponent(namaTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(13, 13, 13)
-                        .addComponent(jLabel3))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(lahirFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addComponent(jLabel4))
-                    .addComponent(jurusanTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(13, 13, 13)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addComponent(jLabel5))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(13, 13, 13)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tambahButton)
-                    .addComponent(ubahButton)
-                    .addComponent(hapusButton))
-                .addGap(23, 23, 23)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel7)
-                .addGap(14, 14, 14))
-        );
+        getContentPane().add(matakuliahRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 12, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void tambahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tambahButtonMouseClicked
+        if (ubahButton.isEnabled()) {
+            InputUtil.emptyAllTextComponent(this);
+            return;
+        }
+        if (!InputUtil.isAllTextComponentFilled(this,
+                "Seluruh field mesti diisi lengkap")) {
+            return;
+        }
         try {
             String sql = "INSERT INTO mahasiswa VALUES (?, ?, ?, ?, ?)";
             PreparedStatement p = dbConnection.prepareStatement(sql);
@@ -306,8 +221,9 @@ public class MahasiswaForm extends javax.swing.JFrame {
             p.setString(5, alamatTextArea.getText());
             p.executeUpdate();
             p.close();
-        } catch (java.lang.NullPointerException e) {
-            JOptionPane.showMessageDialog(this, "Seluruh field mesti diisi lengkap");
+        } catch (MySQLIntegrityConstraintViolationException e) {
+            JOptionPane.showMessageDialog(this, 
+                    "NIM yang dimasukkan sudah terdaftar");
         } catch (SQLException e) {
             System.err.println(e);
         }
@@ -319,17 +235,18 @@ public class MahasiswaForm extends javax.swing.JFrame {
     private void ubahButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ubahButtonMouseClicked
         final int i = mahasiswaTable.getSelectedRow();
         if (i == -1) {
-// tidak ada baris terseleksi
+            // tidak ada baris terseleksi
             return;
         }
-// ambil nim yang terseleksi
+        // ambil nim yang terseleksi
         String nim = (String) mahasiswaTableModel.getValueAt(i, 0);
         String nama = namaTextField.getText();
         java.util.Date tanggalLahir = (java.util.Date) lahirFormattedTextField.getValue();
         String jurusan = jurusanTextField.getText();
         String alamat = alamatTextArea.getText();
         try {
-            String sql = "UPDATE mahasiswa SET nama = ?, tanggal_lahir = ?, jurusan = ?, alamat = ? where nim = ?";
+            String sql = "UPDATE mahasiswa SET nama = ?, tanggal_lahir = ?, "
+                    + "jurusan = ?, alamat = ? where nim = ?";
             PreparedStatement p = dbConnection.prepareStatement(sql);
             p.setString(1, nama);
             p.setDate(2, new java.sql.Date(tanggalLahir.getTime()));
@@ -342,6 +259,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
             System.err.println(e);
         }
         loadData();
+        mahasiswaTable.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
 
 
 
@@ -349,7 +267,6 @@ public class MahasiswaForm extends javax.swing.JFrame {
     }//GEN-LAST:event_ubahButtonMouseClicked
 
     private void hapusButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_hapusButtonMouseClicked
-        int selectedRow = mahasiswaTable.getSelectedRow();
         if (selectedRow == -1) {
 // tidak ada baris terseleksi
             return;
@@ -370,7 +287,7 @@ public class MahasiswaForm extends javax.swing.JFrame {
     }//GEN-LAST:event_hapusButtonMouseClicked
 
     private void mahasiswaTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mahasiswaTableMouseClicked
-        int selectedRow = mahasiswaTable.getSelectedRow();
+        selectedRow = mahasiswaTable.getSelectedRow();
         // jika tak ada baris terseleksi
         if (selectedRow == -1) {
             emptyAllTextField();
@@ -384,9 +301,11 @@ public class MahasiswaForm extends javax.swing.JFrame {
         nimTextField.setText(nim);
         String nama = (String) mahasiswaTableModel.getValueAt(selectedRow, 1);
         namaTextField.setText(nama);
-        java.util.Date tanggalLahir = (java.util.Date) mahasiswaTableModel.getValueAt(selectedRow, 2);
+        java.util.Date tanggalLahir = (java.util.Date) mahasiswaTableModel
+                .getValueAt(selectedRow, 2);
         lahirFormattedTextField.setValue(tanggalLahir);
-        String jurusan = (String) mahasiswaTableModel.getValueAt(selectedRow, 3);
+        String jurusan = (String) mahasiswaTableModel
+                .getValueAt(selectedRow, 3);
         jurusanTextField.setText(jurusan);
         String alamat = (String) mahasiswaTableModel.getValueAt(selectedRow, 4);
         alamatTextArea.setText(alamat);
@@ -412,25 +331,12 @@ public class MahasiswaForm extends javax.swing.JFrame {
     }
 
     private void loadData() {
-// menghapus seluruh data
-        mahasiswaTableModel.getDataVector().removeAllElements();
-// memberi tahu bahwa data telah kosong
-        mahasiswaTableModel.fireTableDataChanged();
         try {
+            ResultSet rs = sqlStatement.executeQuery(select_sql);
+            mahasiswaTableModel.readResultSet(rs);
 
-            ResultSet r = sqlStatement.executeQuery(select_sql);
-            while (r.next()) {
-// lakukan penelusuran baris
-                Object[] newRowFields = new Object[5];
-                newRowFields[0] = r.getString("nim");
-                newRowFields[1] = r.getString("nama");
-                savedTanggalLahir = r.getDate("tanggal_lahir");
-                newRowFields[2] = savedTanggalLahir;
-                newRowFields[3] = r.getString("jurusan");
-                newRowFields[4] = r.getString("alamat");
-                mahasiswaTableModel.addRow(newRowFields);
-            }
-            r.close();
+            rs.close();
+
             mahasiswaTable.getColumnModel().getColumn(2).setCellRenderer(new TableCellRenderer() {
 
                 @Override
@@ -442,18 +348,18 @@ public class MahasiswaForm extends javax.swing.JFrame {
                     JTextField renderer = new JTextField(dateFormater.format(value));
                     renderer.setBorder(null);
                     renderer.setBorder(table.getBorder());
-                    if(isSelected){
+                    if (isSelected) {
                         renderer.setBackground(table.getSelectionBackground());
-                        if(hasFocus){
+                        if (hasFocus) {
                             renderer.setBorder(BorderFactory.createLineBorder(new Color(table.getGridColor().getRGB())));
                         }
-                    }
-                    else{
+                    } else {
                         renderer.setBackground(table.getBackground());
                     }
                     return renderer;
                 }
             });
+
         } catch (SQLException e) {
             System.err.println(e);
         }
@@ -467,8 +373,11 @@ public class MahasiswaForm extends javax.swing.JFrame {
         alamatTextArea.setText(null);
         ubahButton.setEnabled(false);
         hapusButton.setEnabled(false);
+        if (selectedRow != -1) {
+            mahasiswaTable.removeRowSelectionInterval(selectedRow, selectedRow);
+        }
+        selectedRow = -1;
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup NavigasiButtonGroup;
     private javax.swing.JTextArea alamatTextArea;

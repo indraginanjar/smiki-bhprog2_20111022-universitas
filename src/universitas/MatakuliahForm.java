@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * MahasiswaForm.java
  * 
  * Created on Oct 22, 2011, 2:56:09 PM
@@ -17,20 +12,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author indra
+ * @author indraginanjar@gmail.com
  */
 @SuppressWarnings("serial")
 public class MatakuliahForm extends javax.swing.JFrame {
 
-    DefaultTableModel tableModel = new ReadonlyTableModel();
+    ReadonlyTableModel tableModel = new ReadonlyTableModel();
     final Connection dbConnection;
     Statement sqlStatement;
     String selectedKode;
-    final String select_sql;
+    final String selectSql;
+    int selectedRow;
 
     /** Creates new form MahasiswaForm */
     public MatakuliahForm() {
@@ -41,13 +36,13 @@ public class MatakuliahForm extends javax.swing.JFrame {
         tableModel.addColumn("SKS");
         tableModel.addColumn("Semester");
 
-        dbConnection = KoneksiDatabase.getKoneksi();
+        dbConnection = DatabaseUtil.getConnection();
         try {
             sqlStatement = dbConnection.createStatement();
         } catch (SQLException e) {
             System.err.println(e);
         }
-        select_sql = "SELECT * FROM matakuliah";
+        selectSql = "SELECT * FROM matakuliah";
 
         loadData();
 
@@ -84,15 +79,23 @@ public class MatakuliahForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Indra's Universitas - Matakuliah");
+        setMinimumSize(new java.awt.Dimension(534, 604));
         setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("Kode");
+        jLabel1.setText("Kode:");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 54, -1, 20));
+        getContentPane().add(kodeTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 54, 330, -1));
 
-        jLabel2.setText("Nama");
+        jLabel2.setText("Nama:");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 94, -1, -1));
+        getContentPane().add(namaTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 94, 330, -1));
 
-        jLabel4.setText("SKS");
+        jLabel4.setText("SKS:");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 139, -1, 10));
 
-        jLabel5.setText("Semester");
+        jLabel5.setText("Semester:");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
 
         tambahButton.setText("Tambah");
         tambahButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -100,6 +103,7 @@ public class MatakuliahForm extends javax.swing.JFrame {
                 tambahButtonMouseClicked(evt);
             }
         });
+        getContentPane().add(tambahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 340, 100, -1));
 
         ubahButton.setText("Ubah");
         ubahButton.setEnabled(false);
@@ -108,6 +112,7 @@ public class MatakuliahForm extends javax.swing.JFrame {
                 ubahButtonMouseClicked(evt);
             }
         });
+        getContentPane().add(ubahButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(276, 340, 110, -1));
 
         hapusButton.setText("Hapus");
         hapusButton.setEnabled(false);
@@ -116,6 +121,7 @@ public class MatakuliahForm extends javax.swing.JFrame {
                 hapusButtonMouseClicked(evt);
             }
         });
+        getContentPane().add(hapusButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(392, 340, 100, -1));
 
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -150,20 +156,17 @@ public class MatakuliahForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(table);
 
-        jLabel7.setFont(new java.awt.Font("Dialog", 1, 8));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 392, 470, 182));
+
+        jLabel7.setFont(new java.awt.Font("Dialog", 1, 8)); // NOI18N
         jLabel7.setText("indraginanjar@gmail.com");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(383, 574, -1, -1));
 
-        try {
-            semesterFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
+        semesterFormattedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        getContentPane().add(semesterFormattedTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 180, 30, -1));
 
-        try {
-            sksFormatedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##")));
-        } catch (java.text.ParseException ex) {
-            ex.printStackTrace();
-        }
+        sksFormatedTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        getContentPane().add(sksFormatedTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 139, 30, -1));
 
         NavigationButtonGroup.add(mahasiswaRadioButton);
         mahasiswaRadioButton.setText("Mahasiswa");
@@ -172,98 +175,15 @@ public class MatakuliahForm extends javax.swing.JFrame {
                 mahasiswaRadioButtonActionPerformed(evt);
             }
         });
+        getContentPane().add(mahasiswaRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 12, -1, -1));
 
         NavigationButtonGroup.add(matakuliahRadioButton);
         matakuliahRadioButton.setSelected(true);
         matakuliahRadioButton.setText("Matakuliah");
+        getContentPane().add(matakuliahRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 12, -1, -1));
 
-        jLabel3.setText("Form");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(383, 383, 383)
-                        .addComponent(jLabel7))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel5)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(semesterFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addGap(14, 14, 14)
-                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(jLabel4)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel1)
-                                                    .addComponent(jLabel2))))
-                                        .addComponent(jLabel3))
-                                    .addGap(27, 27, 27)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(mahasiswaRadioButton)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                            .addComponent(matakuliahRadioButton))
-                                        .addComponent(kodeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(namaTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(sksFormatedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(tambahButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(10, 10, 10)
-                                .addComponent(ubahButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(6, 6, 6)
-                                .addComponent(hapusButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(mahasiswaRadioButton)
-                    .addComponent(matakuliahRadioButton))
-                .addGap(44, 44, 44)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(kodeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(namaTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addGap(33, 33, 33)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(sksFormatedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addComponent(jLabel5))
-                    .addComponent(semesterFormattedTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tambahButton)
-                    .addComponent(ubahButton)
-                    .addComponent(hapusButton))
-                .addGap(66, 66, 66)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(6, 6, 6)
-                .addComponent(jLabel7))
-        );
+        jLabel3.setText("Form:");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(51, 16, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -273,6 +193,10 @@ public class MatakuliahForm extends javax.swing.JFrame {
             emptyAllTextField();
             return;
         }
+        if(!InputUtil.isAllTextComponentFilled(this, 
+                "Seluruh field mesti diisi lengkap")){
+            return;
+        }        
         try {
             String sql = "INSERT INTO matakuliah VALUES (?, ?, ?, ?)";
             PreparedStatement p = dbConnection.prepareStatement(sql);
@@ -285,7 +209,7 @@ public class MatakuliahForm extends javax.swing.JFrame {
         } catch (java.lang.NullPointerException e) {
             JOptionPane.showMessageDialog(this, "Seluruh field mesti diisi lengkap");
         } catch (MySQLIntegrityConstraintViolationException e) {
-            JOptionPane.showMessageDialog(this, "ID yang dimasukkan, sudah ada");
+            JOptionPane.showMessageDialog(this, "Kode yang dimasukkan, sudah ada");
         } catch (SQLException e) {
             System.err.println(e);
         }
@@ -313,7 +237,7 @@ public class MatakuliahForm extends javax.swing.JFrame {
             System.err.println(e);
         }
         loadData();
-
+        table.getSelectionModel().setSelectionInterval(selectedRow, selectedRow);
 
 
 
@@ -339,7 +263,7 @@ public class MatakuliahForm extends javax.swing.JFrame {
     }//GEN-LAST:event_hapusButtonMouseClicked
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
-        int selectedRow = table.getSelectedRow();
+        selectedRow = table.getSelectedRow();
         // jika tak ada baris terseleksi
         if (selectedRow == -1) {
             emptyAllTextField();
@@ -376,36 +300,25 @@ public class MatakuliahForm extends javax.swing.JFrame {
     }
 
     private void loadData() {
-// menghapus seluruh data
-        tableModel.getDataVector().removeAllElements();
-// memberi tahu bahwa data telah kosong
-        tableModel.fireTableDataChanged();
         try {
-
-            ResultSet r = sqlStatement.executeQuery(select_sql);
-            while (r.next()) {
-// lakukan penelusuran baris
-                Object[] newRowFields = new Object[5];
-                newRowFields[0] = r.getString("kode_mtk");
-                newRowFields[1] = r.getString("nama_mtk");
-                newRowFields[2] = r.getString("sks");
-                newRowFields[3] = r.getString("semester");
-                tableModel.addRow(newRowFields);
-            }
-            r.close();
+            ResultSet rs = sqlStatement.executeQuery(selectSql);
+            tableModel.readResultSet(rs);
+            rs.close();
         } catch (SQLException e) {
             System.err.println(e);
         }
     }
 
     void emptyAllTextField() {
-        kodeTextField.setText(null);
-        namaTextField.setText(null);
-        sksFormatedTextField.setText(null);
-        semesterFormattedTextField.setText(null);
+        InputUtil.emptyAllTextComponent(this);
         ubahButton.setEnabled(false);
         hapusButton.setEnabled(false);
+        if(selectedRow != -1){
+            table.removeRowSelectionInterval(selectedRow, selectedRow);
+        }
+        selectedRow = -1;
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup NavigationButtonGroup;
